@@ -1,21 +1,21 @@
 package com.github.gpaddons.gpneutralprotector;
 
-import com.github.jikoo.util.event.Event;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Pillager;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.projectiles.ProjectileSource;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GPNeutralProtector extends JavaPlugin {
 
@@ -29,51 +29,54 @@ public class GPNeutralProtector extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		if (getConfig().getBoolean("features.protect-unarmed-pillagers")) {
-			Event.register(EntityDamageByEntityEvent.class, this::protectUnarmedPillager, this);
+			getServer().getPluginManager().registerEvents(new ProtectUnarmedPillager(), this);
 		}
 	}
 
-	private void protectUnarmedPillager(EntityDamageByEntityEvent event) {
-		if (event.getEntityType() != EntityType.PILLAGER) return;
-
-		Pillager pillager = (Pillager) event.getEntity();
-		EntityEquipment equipment = pillager.getEquipment();
-
-		if (equipment != null && (equipment.getItemInMainHand().getType() != Material.AIR || equipment.getItemInOffHand().getType() != Material.AIR)) return;
-
-		Entity damager = event.getDamager();
-		Player attacker = null;
+	@Contract("null -> null")
+	static @Nullable Player getAttackingPlayer(@Nullable Entity damager) {
 		if (damager instanceof Player) {
-			attacker = (Player) damager;
-		} else if (damager instanceof Projectile) {
+			return  (Player) damager;
+		}
+
+		if (damager instanceof Projectile) {
 			ProjectileSource shooter = ((Projectile) damager).getShooter();
 			if (shooter instanceof Player) {
-				attacker = (Player) shooter;
+				return  (Player) shooter;
 			}
 		}
 
+		return null;
+	}
+
+	static void blockIfClaimed(@NotNull Cancellable cancellable, @NotNull Location target, @Nullable Player actor) {
+		// Use cached claim where possible.
 		Claim cachedClaim = null;
 		PlayerData playerData = null;
-		if (attacker != null) {
-			playerData = GriefPrevention.instance.dataStore.getPlayerData(attacker.getUniqueId());
+		if (actor != null) {
+			playerData = GriefPrevention.instance.dataStore.getPlayerData(actor.getUniqueId());
 			cachedClaim = playerData.lastClaim;
 		}
 
-		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(event.getEntity().getLocation(), false, cachedClaim);
+		// Get current claim.
+		Claim claim = GriefPrevention.instance.dataStore.getClaimAt(target, false, cachedClaim);
 
+		// Only protect inside claims.
 		if (claim == null) return;
 
-		if (attacker == null) {
-			event.setCancelled(true);
+		// Always block non-player attacks.
+		if (actor == null) {
+			cancellable.setCancelled(true);
 			return;
 		}
 
-		String failureReason = claim.allowBuild(attacker, Material.AIR);
+		String failureReason = claim.allowBuild(actor, Material.AIR);
 
+		// Only block players without build trust.
 		if (failureReason == null) return;
 
-		event.setCancelled(true);
-		GriefPrevention.sendMessage(attacker, ChatColor.RED, failureReason);
+		cancellable.setCancelled(true);
+		GriefPrevention.sendMessage(actor, ChatColor.RED, failureReason);
 		playerData.lastClaim = claim;
 	}
 
