@@ -29,7 +29,7 @@ cache:
   - C:\maven\apache-maven-3.6.3
   - C:\Users\appveyor\.m2
 artifacts:
-  - path: target\GPNeutralProtector.jar
+  - path: target\GPExtraProtections.jar
     name: GPExtraProtections
 only_commits:
   files:
