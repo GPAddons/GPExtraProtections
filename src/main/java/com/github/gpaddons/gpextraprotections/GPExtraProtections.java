@@ -31,6 +31,10 @@ public class GPExtraProtections extends JavaPlugin {
 		if (getConfig().getBoolean("features.protect-unarmed-pillagers")) {
 			getServer().getPluginManager().registerEvents(new ProtectUnarmedPillager(), this);
 		}
+
+		if (getConfig().getBoolean("features.protect-nametagged-entities.enabled")) {
+			getServer().getPluginManager().registerEvents(new ProtectNametaggedEntities(this), this);
+		}
 	}
 
 	@Contract("null -> null")

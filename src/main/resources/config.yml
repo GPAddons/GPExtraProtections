@@ -1,2 +1,22 @@
 features:
   protect-unarmed-pillagers: true
+  protect-nametagged-entities:
+    enabled: true
+    # Entity type blacklist. Entities of these types are never protected.
+    type_blacklist:
+      - ELDER_GUARDIAN
+      - ENDER_DRAGON
+      - WITHER
+    # Persistent data blacklist. Compatibility for plugins that store their data in PersistentDataContainers.
+    persistent_data_blacklist:
+      - "mobstacker:stackSize"
+    # Metadata blacklist. Compatibility for plugins that store their data in Metadatables.
+    metadata_blacklist:
+      - "NPC"
+      - "Shopkeeper"
+      - "stackSize"
+    # Name pattern blacklist. Uses regular expressions that ignore case.
+    # All colors are stripped from names before comparison for maximum compatibility.
+    # For more information on regular expressions, see https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
+    name_pattern_blacklist:
+      - "\d+x \w+"
