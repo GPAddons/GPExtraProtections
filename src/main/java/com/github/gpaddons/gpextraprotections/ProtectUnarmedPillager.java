@@ -1,4 +1,4 @@
-package com.github.gpaddons.gpneutralprotector;
+package com.github.gpaddons.gpextraprotections;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -22,7 +22,7 @@ public class ProtectUnarmedPillager implements Listener {
 		// Only protect if pillager has no weapons.
 		if (equipment != null && (equipment.getItemInMainHand().getType() != Material.AIR || equipment.getItemInOffHand().getType() != Material.AIR)) return;
 
-		GPNeutralProtector.blockIfClaimed(event, pillager.getLocation(), GPNeutralProtector.getAttackingPlayer(event.getDamager()));
+		GPExtraProtections.blockIfClaimed(event, pillager.getLocation(), GPExtraProtections.getAttackingPlayer(event.getDamager()));
 	}
 
 }

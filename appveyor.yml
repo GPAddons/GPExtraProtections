@@ -30,7 +30,7 @@ cache:
   - C:\Users\appveyor\.m2
 artifacts:
   - path: target\GPNeutralProtector.jar
-    name: GPNeutralProtector
+    name: GPExtraProtections
 only_commits:
   files:
     - src/**/*

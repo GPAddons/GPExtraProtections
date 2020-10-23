@@ -1,4 +1,4 @@
-package com.github.gpaddons.gpneutralprotector;
+package com.github.gpaddons.gpextraprotections;
 
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class GPNeutralProtector extends JavaPlugin {
+public class GPExtraProtections extends JavaPlugin {
 
 	@Override
 	public void onEnable() {

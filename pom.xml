@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.gpaddons</groupId>
-    <artifactId>gpneutralprotector</artifactId>
+    <artifactId>gpextraprotections</artifactId>
     <version>1.0.0</version>
-    <name>GPNeutralProtector</name>
-    <description>Protect less-neutral neutrals.</description>
+    <name>GPExtraProtections</name>
+    <description>Additional configurable protections.</description>
 
     <developers>
         <developer>
