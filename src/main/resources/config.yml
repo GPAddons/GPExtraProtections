@@ -9,7 +9,7 @@ features:
       - WITHER
     # Persistent data blacklist. Compatibility for plugins that store their data in PersistentDataContainers.
     persistent_data_blacklist:
-      - "mobstacker:stackSize"
+      - "mobstacker:stacksize"
     # Metadata blacklist. Compatibility for plugins that store their data in Metadatables.
     metadata_blacklist:
       - "NPC"
@@ -19,4 +19,4 @@ features:
     # All colors are stripped from names before comparison for maximum compatibility.
     # For more information on regular expressions, see https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html
     name_pattern_blacklist:
-      - "\d+x \w+"
+      - "\\d+x \\w+"

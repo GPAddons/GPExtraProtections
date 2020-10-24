@@ -3,11 +3,13 @@ package com.github.gpaddons.gpextraprotections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -40,11 +42,13 @@ public class ProtectNametaggedEntities implements Listener {
 			// let users check whatever conditions, not just conditions that Spigot approves of existing.
 			// Because we're nice, use deprecated constructor to support whatever user desires.
 			// noinspection deprecation
-			return new NamespacedKey(split[0], split[1]);
+			return new NamespacedKey(split[0].toLowerCase(Locale.ROOT), split[1].toLowerCase(Locale.ROOT));
 		});
 
+		// Load blacklisted metadata keys.
 		loadBlacklist(plugin, metaBlacklist, "metadata_blacklist", Function.identity());
 
+		// Load blacklisted name patterns.
 		loadBlacklist(plugin, nameBlacklist, "name_pattern_blacklist", key -> Pattern.compile(key, Pattern.CASE_INSENSITIVE));
 	}
 
@@ -82,8 +86,8 @@ public class ProtectNametaggedEntities implements Listener {
 		// Ensure name is set.
 		if (entity.getCustomName() == null) return;
 
-		// Ensure entity has actually been tagged by a player - entity will not despawn and name is visible.
-		if (entity.getRemoveWhenFarAway() || !entity.isCustomNameVisible()) return;
+		// Ensure entity has actually been tagged by a player - entity will not despawn.
+		if (entity.getRemoveWhenFarAway()) return;
 
 		// Enforce persistent data key blacklist.
 		PersistentDataContainer container = entity.getPersistentDataContainer();
@@ -93,7 +97,7 @@ public class ProtectNametaggedEntities implements Listener {
 		if (metaBlacklist.stream().anyMatch(entity::hasMetadata)) return;
 
 		// Enforce name pattern blacklist.
-		if (nameBlacklist.stream().anyMatch(pattern -> pattern.matcher(entity.getCustomName()).find())) return;
+		if (nameBlacklist.stream().anyMatch(pattern -> pattern.matcher(ChatColor.stripColor(entity.getCustomName())).find())) return;
 
 		GPExtraProtections.blockIfClaimed(event, entity.getLocation(), GPExtraProtections.getAttackingPlayer(event.getDamager()));
 
